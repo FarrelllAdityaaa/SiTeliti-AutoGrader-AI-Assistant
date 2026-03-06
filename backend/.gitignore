@@ -1,0 +1,17 @@
+# Mengabaikan folder virtual environment
+venv/
+env/
+
+# Mengabaikan file konfigurasi rahasia
+.env
+
+# Mengabaikan file cache Python
+__pycache__/
+*.pyc
+
+# Mengabaikan folder log dan debug output
+logs/
+debug_ocr_output/
+
+# Mengabaikan kode check model
+check_model.py

@@ -103,7 +103,7 @@ const GradingWorkspace = ({ onBack }) => {
       formData.append("file_excel", excelFile); // Kirim file dari memori
 
       const response = await axios.post(
-        "http://127.0.0.1:8000/api/export",
+        "https://siteliti-autograder-ai-assistant.onrender.com/api/export",
         formData,
         {
           responseType: "blob",

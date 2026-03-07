@@ -33,7 +33,7 @@ app.include_router(endpoints.router, prefix="/api")
 # Endpoint sederhana untuk cek server berjalan dengan baik
 @app.get("/")
 def read_root():
-    return {"message": "Server AutoGrader berjalan dengan baik!"}
+    return {"message": "Server AutoGrader SiTeliti berjalan dengan baik!"}
 
 # Endpoint untuk cek kesehatan server (health check)
 @app.get("/health")

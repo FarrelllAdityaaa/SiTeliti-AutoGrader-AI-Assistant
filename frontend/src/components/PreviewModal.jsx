@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { X, FileText, Save } from "lucide-react";
 import MarkdownRenderer from "./MarkdownRenderer";
@@ -13,6 +13,56 @@ const PreviewModal = ({
   setMeeting,
   saving,
 }) => {
+
+  // State untuk mengatur rasio split antara PDF dan Feedback
+  const [splitRatio, setSplitRatio] = useState(50); // Persentase ukuran layar (default 50%)
+  const [isDragging, setIsDragging] = useState(false);
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const handleMove = (e) => {
+      if (!isDragging || !containerRef.current) return;
+      
+      const containerRect = containerRef.current.getBoundingClientRect();
+      // Mendeteksi apakah dari sentuhan jari (HP) atau klik mouse (Laptop)
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+      // Cek apakah mode HP (vertikal) atau Laptop (horizontal). Batas breakpoint md Tailwind = 768px
+      if (window.innerWidth < 768) {
+        // Mode HP: Tarik Atas / Bawah
+        const newRatio = ((clientY - containerRect.top) / containerRect.height) * 100;
+        if (newRatio > 10 && newRatio < 90) setSplitRatio(newRatio);
+      } else {
+        // Mode Laptop: Tarik Kiri / Kanan
+        const newRatio = ((clientX - containerRect.left) / containerRect.width) * 100;
+        if (newRatio > 10 && newRatio < 90) setSplitRatio(newRatio);
+      }
+    };
+
+    const handleUp = () => setIsDragging(false);
+
+    if (isDragging) {
+      document.addEventListener("mousemove", handleMove);
+      // passive: false untuk mencegah scroll saat drag di HP
+      document.addEventListener("touchmove", handleMove, { passive: false });
+      document.addEventListener("mouseup", handleUp);
+      document.addEventListener("touchend", handleUp);
+      document.body.style.userSelect = "none"; // Cegah teks ter-blok saat ditarik
+    } else {
+      document.body.style.userSelect = "";
+    }
+
+    // Bersihkan event listener saat komponen unmount atau saat isDragging berubah
+    return () => {
+      document.removeEventListener("mousemove", handleMove);
+      document.removeEventListener("touchmove", handleMove);
+      document.removeEventListener("mouseup", handleUp);
+      document.removeEventListener("touchend", handleUp);
+      document.body.style.userSelect = "";
+    };
+  }, [isDragging]);
+
   if (!file || !result) return null;
   // Membuat URL untuk preview PDF
   const fileUrl = file ? URL.createObjectURL(file) + "#view=FitH" : "";
@@ -49,10 +99,10 @@ const PreviewModal = ({
         </div>
 
         {/* Modal Body */}
-        <div className="flex-1 flex flex-col md:flex-row min-h-0 overflow-hidden">
+        <div ref={containerRef} className="flex-1 flex flex-col md:flex-row min-h-0 overflow-hidden relative">
           
           {/* PDF Preview */}
-          <div className="w-full md:w-1/2 h-[40vh] md:h-full border-b md:border-b-0 md:border-r border-gray-300 bg-gray-200 flex-shrink-0 relative">
+          <div className="bg-gray-200 flex-shrink-0 relative flex flex-col items-center justify-center"style={{ flexBasis: `${splitRatio}%` }}>
              <iframe
               src={fileUrl}
               className="w-full h-full block"
@@ -60,10 +110,29 @@ const PreviewModal = ({
               scrolling="yes" 
               style={{ border: "none" }}
             />
+
+            {/* Drag Handle */}
+            {isDragging && (
+              <div className="absolute inset-0 z-10 bg-transparent cursor-row-resize md:cursor-col-resize"></div>
+            )}
+          </div>
+
+          {/* Pembatas atau Divider */}
+          <div
+            className="w-full h-4 md:w-4 md:h-full bg-gray-100 border-y md:border-y-0 md:border-x border-gray-300 hover:bg-blue-200 active:bg-blue-300 flex items-center justify-center cursor-row-resize md:cursor-col-resize z-20 flex-shrink-0 transition-colors"
+            onMouseDown={() => setIsDragging(true)}
+            onTouchStart={(e) => {
+              // Hentikan propagasi agar tidak scroll layar HP
+              if (e.cancelable) e.preventDefault(); 
+              setIsDragging(true);
+            }}
+          >
+            {/* Visual Handle (Garis kecil abu-abu di tengah pembatas) */}
+            <div className="w-12 h-1 md:w-1 md:h-12 bg-gray-400 rounded-full pointer-events-none" />
           </div>
 
           {/* Feedback AI */}
-          <div className="w-full md:w-1/2 h-full overflow-y-auto p-5 md:p-8 bg-white custom-scrollbar">
+          <div className="flex-1 overflow-y-auto p-5 md:p-8 bg-white custom-scrollbar min-w-0 min-h-0">
             <div className="flex justify-between items-end mb-6 border-b pb-4">
               <div>
                 <p className="text-xs md:text-sm text-gray-500 uppercase tracking-wide font-bold">

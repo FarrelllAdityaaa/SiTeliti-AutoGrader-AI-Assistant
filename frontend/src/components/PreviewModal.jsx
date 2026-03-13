@@ -68,15 +68,24 @@ const PreviewModal = ({
   const fileUrl = file ? URL.createObjectURL(file) + "#view=FitH" : "";
 
   // Status nilai
-  const isPassed = result.nilai >= 60;
-  const badgeText = isPassed ? "LULUS" : "PERBAIKAN";
+  // Nilai status dari backend AI
+  const badgeText = result.status ? result.status.toUpperCase() : "ERROR";
 
-  const badgeClass = 
-    result.nilai >= 80
-      ? "text-green-800 bg-green-100 border-green-200"
-      : result.nilai >= 60
-      ? "text-yellow-800 bg-yellow-100 border-yellow-200"
-      : "text-red-800 bg-red-100 border-red-200";
+  // Kelas warna badge berdasarkan status
+  let badgeClass = "text-gray-800 bg-gray-100 border-gray-200"; // Default jika error
+  
+  if (badgeText === "TIDAK LULUS") {
+    // Di bawah 70 Merah
+    badgeClass = "text-red-800 bg-red-100 border-red-200";
+  } else if (badgeText === "LULUS") {
+    if (result.nilai >= 70 && result.nilai <= 75) {
+      // Lulus tapi kurang memuaskan (70 - 75) Kuning
+      badgeClass = "text-yellow-800 bg-yellow-100 border-yellow-200";
+    } else {
+      // Lulus aman (> 75) Hijau
+      badgeClass = "text-green-800 bg-green-100 border-green-200";
+    }
+  }
 
   const modalContent = (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-2 md:p-4 animate-fade-in">

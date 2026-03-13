@@ -67,13 +67,26 @@ const TypewriterMarkdown = ({ text, speed = 1 }) => {
 const GradeResult = ({ result, onPreview }) => {
   if (!result) return null;
 
-  const scoreColor =
-    result.nilai >= 80
-      ? "text-green-600 bg-green-50"
-      : result.nilai >= 60
-      ? "text-yellow-600 bg-yellow-50"
-      : "text-red-600 bg-red-50";
-  const passStatus = result.nilai >= 60 ? "LULUS" : "PERBAIKAN";
+  // Nilai status dari backend AI
+  const rawStatus = result.status ? result.status.toUpperCase() : "ERROR";
+  
+  // Kelas warna badge berdasarkan status
+  let scoreColor = "text-gray-600 bg-gray-50 border-gray-200";
+  let passStatus = rawStatus; // Teks default sesuai backend
+
+  if (rawStatus === "TIDAK LULUS") {
+    // Di bawah 70 Merah
+    scoreColor = "text-red-600 bg-red-50 border border-red-200";
+  } else if (rawStatus === "LULUS") {
+    if (result.nilai >= 70 && result.nilai <= 75) {
+      // Lulus tapi kurang memuaskan (70 - 75) Kuning
+      scoreColor = "text-yellow-600 bg-yellow-50 border border-yellow-200";
+    } else {
+      // Lulus aman (> 75) Hijau
+      scoreColor = "text-green-600 bg-green-50 border border-green-200";
+    }
+  }
+
   const feedbackContent =
     result.feedback_text || result.feedback || "Tidak ada feedback tersedia.";
 

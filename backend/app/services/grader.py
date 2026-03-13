@@ -143,6 +143,9 @@ async def grade_submission(text_laporan: str, instruction: str):
     - Jika tidak ada bobot eksplisit, bagi nilai secara proporsional
     - Jawaban tidak sesuai instruksi = 0
     - Total nilai maksimum = 100
+    - Ketentuan status kelulusan (WAJIB DIIKUTI BERDASARKAN TOTAL NILAI):
+      * Jika nilai < 70, maka status = "Tidak Lulus"
+      * Jika nilai >= 70, maka status = "Lulus"
 
     TULIS PENILAIAN ANDA DALAM FORMAT JSON BERIKUT (TANPA TEKS DI LUAR JSON):
     {{

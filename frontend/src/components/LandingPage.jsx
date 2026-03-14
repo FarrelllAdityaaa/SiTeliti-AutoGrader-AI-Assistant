@@ -3,13 +3,9 @@ import {
   Sparkles,
   FileText,
   FileSpreadsheet,
-  // BrainCircuit,
   BotMessageSquare,
-  // ScanEye,
   SearchCheck,
-  // ArrowRight,
 } from "lucide-react";
-// import labCoIcon from "../assets/lab-co-analyzing.png";
 
 const LandingPage = ({ onStart }) => {
   // Logika typewriter
@@ -112,13 +108,6 @@ const LandingPage = ({ onStart }) => {
             </span>
           </div>
         </div>
-
-        {/* Gambar LabCo */}
-        {/* <img
-              src={labCoIcon}
-              alt="Lab-CO Analyzing"
-              className="w-32 h-auto object-contain drop-shadow-xl"
-            /> */}
 
         {/* Text Sapaan */}
         <div className="max-w-5xl text-center mb-10 h-24 flex items-center justify-center">

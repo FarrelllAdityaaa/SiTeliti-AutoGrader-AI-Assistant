@@ -13,12 +13,6 @@ app = FastAPI(
 )
 
 # Konfigurasi CORS (Cross-Origin Resource Sharing)
-# Mengizinkan React (localhost:5173) mengakses Python
-origins = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173"
-]
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
